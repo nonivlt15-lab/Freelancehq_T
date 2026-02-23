@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreelanceHQ — Tableau de bord</title>
+
+  <!-- ── PWA ── -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FreelanceHQ">
+  <!-- On a real server you'd link actual icon files here -->
+  <!-- <link rel="apple-touch-icon" href="icon-192.png"> -->
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f6f3;
+  --white: #ffffff;
+  --ink: #111010;
+  --muted: #888580;
+  --border: #e4e2dc;
+  --accent: #2563eb;
+  --accent-light: #eff4ff;
+  --green: #16a34a;
+  --green-light: #f0fdf4;
+  --orange: #ea580c;
+  --orange-light: #fff7ed;
+  --red: #dc2626;
+  --red-light: #fef2f2;
+  --sidebar-w: 220px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 100;
+}
+
+.logo {
+  padding: 1.5rem 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.logo-icon {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+
+.logo-text {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.logo-text span { color: #60a5fa; }
+
+.nav {
+  padding: 1rem 0.75rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.nav-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.3);
+  padding: 0.5rem 0.5rem 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.55);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+.nav-item.active { background: rgba(37,99,235,0.25); color: #93c5fd; }
+
+.nav-item .icon { font-size: 1rem; min-width: 18px; text-align: center; }
+
+.sidebar-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  color: #fff;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-info { min-width: 0; }
+.user-name { font-size: 0.8rem; color: #fff; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-plan { font-size: 0.65rem; color: rgba(255,255,255,0.35); font-family: 'JetBrains Mono', monospace; }
+
+/* ─── MAIN ─── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0.875rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.page-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.topbar-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+.btn {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--bg); color: var(--ink); }
+.btn-sm { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
+.btn-danger { background: var(--red-light); color: var(--red); border: 1px solid #fecaca; }
+.btn-danger:hover { background: #fecaca; }
+.btn-success { background: var(--green-light); color: var(--green); border: 1px solid #bbf7d0; }
+
+.content {
+  padding: 2rem;
+  flex: 1;
+}
+
+/* ─── VIEWS ─── */
+.view { display: none; animation: fadeIn 0.2s ease; }
+.view.active { display: block; }
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* ─── KPI CARDS ─── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.kpi {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+}
+
+.kpi-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.kpi-sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+}
+
+.kpi-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 0.4rem;
+}
+
+.badge-green { background: var(--green-light); color: var(--green); }
+.badge-orange { background: var(--orange-light); color: var(--orange); }
+.badge-blue { background: var(--accent-light); color: var(--accent); }
+.badge-red { background: var(--red-light); color: var(--red); }
+
+/* ─── SECTION HEADER ─── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* ─── TABLE ─── */
+.table-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+thead tr { border-bottom: 1px solid var(--border); background: var(--bg); }
+
+th {
+  padding: 0.65rem 1rem;
+  text-align: left;
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+td {
+  padding: 0.85rem 1rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg); }
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+
+.status-paid { background: var(--green-light); color: var(--green); }
+.status-pending { background: var(--orange-light); color: var(--orange); }
+.status-late { background: var(--red-light); color: var(--red); }
+.status-draft { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+
+.amount { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+
+/* ─── URSSAF CALCULATOR ─── */
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.calc-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+}
+
+.calc-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-group { margin-bottom: 1rem; }
+
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 0.6rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--bg);
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.form-input:focus, .form-select:focus { border-color: var(--accent); background: #fff; }
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+
+.result-row:last-child { border-bottom: none; }
+.result-row.total { font-weight: 700; font-size: 1rem; }
+.result-row.total .result-val { color: var(--accent); font-size: 1.1rem; }
+.result-key { color: var(--muted); }
+.result-val { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+
+.urssaf-bar {
+  height: 8px;
+  background: var(--border);
+  border-radius: 999px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+.urssaf-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #7c3aed);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.quarterly-alert {
+  background: var(--orange-light);
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  font-size: 0.82rem;
+  color: var(--orange);
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+/* ─── MODAL ─── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.15s ease;
+}
+
+.overlay.open { display: flex; }
+
+.modal {
+  background: var(--white);
+  border-radius: 18px;
+  width: 90%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp { from { transform: translateY(20px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+
+.modal-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title { font-size: 1.05rem; font-weight: 700; }
+.modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--muted); padding: 0.25rem; border-radius: 6px; }
+.modal-close:hover { background: var(--bg); color: var(--ink); }
+
+.modal-body { padding: 1.25rem 1.5rem 1.5rem; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+
+.invoice-line-header {
+  display: grid;
+  grid-template-columns: 1fr 80px 90px 30px;
+  gap: 0.5rem;
+  font-size: 0.68rem;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.invoice-line {
+  display: grid;
+  grid-template-columns: 1fr 80px 90px 30px;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.line-total {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-align: right;
+  padding-top: 0.3rem;
+}
+
+.invoice-totals {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  margin-top: 0.75rem;
+}
+
+/* ─── CLIENTS ─── */
+.client-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.client-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  transition: box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.client-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+
+.client-avatar {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.875rem;
+}
+
+.client-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.2rem; }
+.client-email { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.75rem; }
+.client-stats { display: flex; gap: 1rem; }
+.client-stat-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.875rem; }
+.client-stat-key { font-size: 0.68rem; color: var(--muted); }
+
+/* Revenue mini chart */
+.mini-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 48px;
+  margin-top: 0.5rem;
+}
+
+.bar {
+  flex: 1;
+  background: var(--accent-light);
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.bar:hover { background: var(--accent); }
+.bar.current { background: var(--accent); }
+
+.bar-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%; transform: translateX(-50%);
+  font-size: 0.58rem;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+/* Empty state */
+.empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--muted);
+}
+
+.empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.empty-title { font-weight: 700; color: var(--ink); margin-bottom: 0.4rem; }
+.empty-sub { font-size: 0.85rem; }
+
+/* Notification dot */
+.notif {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--red);
+  border-radius: 50%;
+  margin-left: auto;
+}
+
+/* Progress ring for URSSAF plafond */
+.progress-ring-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.ring-label { font-size: 0.82rem; }
+.ring-pct { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+.ring-sub { font-size: 0.72rem; color: var(--muted); }
+
+/* Responsive tweak */
+@media (max-width: 900px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .calc-grid { grid-template-columns: 1fr; }
+  .client-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ─── PWA INSTALL BANNER ─── */
+#install-banner {
+  display: none;
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  border-radius: 14px;
+  padding: 0.875rem 1.25rem;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  z-index: 9999;
+  max-width: 420px;
+  width: calc(100% - 2rem);
+  animation: slideUp 0.3s ease;
+}
+
+#install-banner .banner-icon { font-size: 1.5rem; flex-shrink: 0; }
+#install-banner .banner-text { flex: 1; font-size: 0.82rem; line-height: 1.4; }
+#install-banner .banner-text strong { display: block; margin-bottom: 0.15rem; }
+#install-banner .banner-text span { color: rgba(255,255,255,0.55); font-size: 0.75rem; }
+#install-btn { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.8rem; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; cursor: pointer; white-space: nowrap; }
+#install-btn:hover { background: #1d4ed8; }
+#dismiss-btn { background: none; border: none; color: rgba(255,255,255,0.4); font-size: 1.1rem; cursor: pointer; padding: 0.25rem; flex-shrink: 0; }
+#dismiss-btn:hover { color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">
+      <div class="logo-icon">💼</div>
+      <div class="logo-text">Freelance<span>HQ</span></div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-label">Principal</div>
+    <button class="nav-item active" onclick="nav('dashboard', this)"><span class="icon">🏠</span> Tableau de bord</button>
+    <button class="nav-item" onclick="nav('invoices', this)"><span class="icon">📄</span> Factures</button>
+    <button class="nav-item" onclick="nav('clients', this)"><span class="icon">👥</span> Clients</button>
+
+    <div class="nav-label">Finances</div>
+    <button class="nav-item" onclick="nav('urssaf', this)"><span class="icon">🏛️</span> URSSAF <span class="notif"></span></button>
+    <button class="nav-item" onclick="nav('expenses', this)"><span class="icon">💸</span> Dépenses</button>
+
+    <div class="nav-label">Compte</div>
+    <button class="nav-item" onclick="nav('settings', this)"><span class="icon">⚙️</span> Paramètres</button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="avatar">TM</div>
+      <div class="user-info">
+        <div class="user-name">Thomas Martin</div>
+        <div class="user-plan">AUTO-ENTREPRENEUR</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="topbar">
+    <div class="page-title" id="page-title">Tableau de bord</div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost btn-sm">📅 Février 2025</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('invoice-modal')">+ Nouvelle facture</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="view active" id="view-dashboard">
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">CA ce mois</div>
+          <div class="kpi-value">4 850 €</div>
+          <div class="kpi-sub">sur 3 factures</div>
+          <div class="kpi-badge badge-green">↑ +12% vs jan.</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">En attente</div>
+          <div class="kpi-value">2 300 €</div>
+          <div class="kpi-sub">2 factures non payées</div>
+          <div class="kpi-badge badge-orange">⏳ Relancer</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">CA annuel</div>
+          <div class="kpi-value">9 200 €</div>
+          <div class="kpi-sub">plafond : 77 700 €</div>
+          <div class="kpi-badge badge-blue">11.8% du plafond</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Prochain URSSAF</div>
+          <div class="kpi-value">736 €</div>
+          <div class="kpi-sub">échéance 30 avril</div>
+          <div class="kpi-badge badge-red">⚠️ dans 67 jours</div>
+        </div>
+      </div>
+
+      <!-- Revenue chart -->
+      <div class="section-header">
+        <div class="section-title">Chiffre d'affaires — 6 derniers mois</div>
+      </div>
+
+      <div class="table-wrap" style="padding: 1.5rem 1.5rem 2rem;">
+        <div class="mini-chart" style="height: 80px; gap: 8px;">
+          <div class="bar" style="height:55%" title="Sep: 2 100€"><div class="bar-label">Sep</div></div>
+          <div class="bar" style="height:70%" title="Oct: 3 200€"><div class="bar-label">Oct</div></div>
+          <div class="bar" style="height:45%" title="Nov: 1 800€"><div class="bar-label">Nov</div></div>
+          <div class="bar" style="height:85%" title="Déc: 4 250€"><div class="bar-label">Déc</div></div>
+          <div class="bar" style="height:88%" title="Jan: 4 350€"><div class="bar-label">Jan</div></div>
+          <div class="bar current" style="height:100%" title="Fév: 4 850€"><div class="bar-label">Fév ●</div></div>
+        </div>
+      </div>
+
+      <!-- Recent invoices -->
+      <div class="section-header" style="margin-top:1.5rem;">
+        <div class="section-title">Factures récentes</div>
+        <button class="btn btn-ghost btn-sm" onclick="nav('invoices', null)">Voir tout →</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Client</th>
+              <th>Date</th>
+              <th>Montant</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody id="dashboard-invoices"></tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ── FACTURES ── -->
+    <div class="view" id="view-invoices">
+
+      <div class="section-header">
+        <div class="section-title">Toutes les factures (<span id="invoice-count">0</span>)</div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('invoice-modal')">+ Nouvelle facture</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Client</th>
+              <th>Date émission</th>
+              <th>Échéance</th>
+              <th>Montant HT</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="invoices-table"></tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ── CLIENTS ── -->
+    <div class="view" id="view-clients">
+      <div class="section-header">
+        <div class="section-title">Clients (<span id="client-count">0</span>)</div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('client-modal')">+ Nouveau client</button>
+      </div>
+      <div class="client-grid" id="clients-grid"></div>
+    </div>
+
+    <!-- ── URSSAF ── -->
+    <div class="view" id="view-urssaf">
+      <div class="calc-grid">
+        <div class="calc-card">
+          <h3>🧮 Calculateur URSSAF</h3>
+
+          <div class="form-group">
+            <label class="form-label">Activité</label>
+            <select class="form-select" id="urssaf-type" onchange="calcURSSAF()">
+              <option value="0.221">Prestation de services (22.1%)</option>
+              <option value="0.124">Vente de marchandises (12.4%)</option>
+              <option value="0.221" selected>Profession libérale (22.1%)</option>
+              <option value="0.222">Activité mixte (22.2%)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Chiffre d'affaires du trimestre (€)</label>
+            <input class="form-input" type="number" id="urssaf-ca" value="4350" oninput="calcURSSAF()" placeholder="ex: 5000">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Formation professionnelle (0.1–0.3%)</label>
+            <input class="form-input" type="number" id="urssaf-fp" value="0.002" step="0.001" oninput="calcURSSAF()" placeholder="0.002">
+          </div>
+
+          <div id="urssaf-results">
+            <div class="urssaf-bar"><div class="urssaf-fill" id="urssaf-bar" style="width:22.1%"></div></div>
+            <div class="result-row"><span class="result-key">CA déclaré</span><span class="result-val" id="r-ca">4 350 €</span></div>
+            <div class="result-row"><span class="result-key">Cotisations sociales</span><span class="result-val" id="r-cot">961 €</span></div>
+            <div class="result-row"><span class="result-key">Formation prof.</span><span class="result-val" id="r-fp">9 €</span></div>
+            <div class="result-row total"><span class="result-key">Total à payer</span><span class="result-val" id="r-total">970 €</span></div>
+          </div>
+
+          <div class="quarterly-alert">
+            ⚠️ <span>Prochain versement : <strong>30 avril 2025</strong> (T1 2025). Pensez à déclarer sur <strong>autoentrepreneur.urssaf.fr</strong></span>
+          </div>
+        </div>
+
+        <div class="calc-card">
+          <h3>📊 Suivi annuel du plafond</h3>
+          <div class="form-group">
+            <label class="form-label">CA annuel cumulé (€)</label>
+            <input class="form-input" type="number" id="plafond-ca" value="9200" oninput="calcPlafond()" placeholder="ex: 25000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Type d'activité</label>
+            <select class="form-select" id="plafond-type" onchange="calcPlafond()">
+              <option value="77700" selected>Services / Libéral — 77 700 €</option>
+              <option value="188700">Commerce / Hébergement — 188 700 €</option>
+            </select>
+          </div>
+          <div id="plafond-results">
+            <div class="urssaf-bar"><div class="urssaf-fill" id="plafond-bar" style="width:11.8%; background: linear-gradient(90deg, #16a34a, #15803d);"></div></div>
+            <div class="result-row"><span class="result-key">CA réalisé</span><span class="result-val" id="p-ca">9 200 €</span></div>
+            <div class="result-row"><span class="result-key">Plafond annuel</span><span class="result-val" id="p-plafond">77 700 €</span></div>
+            <div class="result-row"><span class="result-key">Restant disponible</span><span class="result-val" id="p-reste" style="color:var(--green)">68 500 €</span></div>
+            <div class="result-row total"><span class="result-key">% utilisé</span><span class="result-val" id="p-pct">11.8%</span></div>
+          </div>
+          <div class="quarterly-alert" style="background:var(--green-light); border-color:#bbf7d0; color:var(--green);">
+            ✅ <span>Vous êtes bien en dessous du plafond. Vous pouvez facturer encore <strong id="p-alert-reste">68 500 €</strong> cette année.</span>
+          </div>
+
+          <div style="margin-top:1.25rem;">
+            <div class="form-label" style="margin-bottom:0.75rem;">Historique trimestriel</div>
+            <div class="result-row"><span class="result-key">T1 2025</span><span class="result-val">4 350 €</span><span class="kpi-badge badge-green" style="margin-left:0.5rem;">payé</span></div>
+            <div class="result-row"><span class="result-key">T2 2025</span><span class="result-val">4 850 €</span><span class="kpi-badge badge-orange" style="margin-left:0.5rem;">à déclarer</span></div>
+            <div class="result-row"><span class="result-key">T3 2025</span><span class="result-val">—</span></div>
+            <div class="result-row"><span class="result-key">T4 2025</span><span class="result-val">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DÉPENSES ── -->
+    <div class="view" id="view-expenses">
+      <div class="section-header">
+        <div class="section-title">Dépenses professionnelles</div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('expense-modal')">+ Ajouter</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Description</th><th>Catégorie</th><th>Montant</th></tr></thead>
+          <tbody id="expenses-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="view" id="view-settings">
+      <div style="max-width:520px;">
+        <div class="calc-card">
+          <h3>👤 Informations personnelles</h3>
+          <div style="margin-top:1rem;">
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Prénom</label><input class="form-input" value="Thomas"></div>
+              <div class="form-group"><label class="form-label">Nom</label><input class="form-input" value="Martin"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="thomas.martin@email.com"></div>
+            <div class="form-group"><label class="form-label">SIRET</label><input class="form-input" value="123 456 789 00012" placeholder="14 chiffres"></div>
+            <div class="form-group"><label class="form-label">Adresse</label><input class="form-input" value="12 rue de la Paix, 75001 Paris"></div>
+            <button class="btn btn-primary" style="margin-top:0.5rem;">💾 Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ── MODAL: NOUVELLE FACTURE ── -->
+<div class="overlay" id="invoice-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📄 Nouvelle facture</div>
+      <button class="modal-close" onclick="closeModal('invoice-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Client</label>
+          <select class="form-select" id="inv-client">
+            <option>Agence Pixel</option>
+            <option>Studio Nova</option>
+            <option>Tech Corp</option>
+            <option>Marie Dupont</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date d'émission</label>
+          <input class="form-input" type="date" id="inv-date">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Référence</label>
+          <input class="form-input" id="inv-ref" placeholder="FAC-2025-001">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Échéance</label>
+          <input class="form-input" type="date" id="inv-due">
+        </div>
+      </div>
+
+      <div class="form-label" style="margin-bottom:0.5rem;">Lignes de facturation</div>
+      <div class="invoice-line-header">
+        <span>Description</span><span>Qté</span><span>Prix unit.</span><span></span>
+      </div>
+      <div id="invoice-lines">
+        <div class="invoice-line">
+          <input class="form-input" placeholder="Prestation design" style="font-size:0.82rem;padding:0.4rem 0.6rem;" oninput="calcTotal()">
+          <input class="form-input" type="number" value="1" style="font-size:0.82rem;padding:0.4rem 0.6rem;" oninput="calcTotal()">
+          <input class="form-input" type="number" value="1200" placeholder="0.00" style="font-size:0.82rem;padding:0.4rem 0.6rem;" oninput="calcTotal()">
+          <span style="color:var(--muted);font-size:0.75rem;padding-top:0.6rem;">🗑</span>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-bottom:1rem;" onclick="addLine()">+ Ajouter une ligne</button>
+
+      <div class="invoice-totals">
+        <div class="result-row"><span class="result-key">Sous-total HT</span><span class="result-val amount" id="modal-ht">1 200 €</span></div>
+        <div class="result-row"><span class="result-key" style="font-size:0.75rem;color:var(--muted)">Auto-entrepreneur — pas de TVA</span><span class="result-val" style="font-size:0.75rem;color:var(--muted)">TVA non applicable (art. 293B CGI)</span></div>
+        <div class="result-row total"><span class="result-key">Total à payer</span><span class="result-val amount" id="modal-total">1 200 €</span></div>
+      </div>
+
+      <div style="display:flex;gap:0.75rem;margin-top:1.25rem;justify-content:flex-end;">
+        <button class="btn btn-ghost" onclick="closeModal('invoice-modal')">Annuler</button>
+        <button class="btn btn-ghost" onclick="saveInvoice('draft')">💾 Brouillon</button>
+        <button class="btn btn-primary" onclick="saveInvoice('pending')">📤 Envoyer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: NOUVEAU CLIENT ── -->
+<div class="overlay" id="client-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">👥 Nouveau client</div>
+      <button class="modal-close" onclick="closeModal('client-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nom / Entreprise</label><input class="form-input" id="cl-name" placeholder="Agence Pixel"></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="cl-email" placeholder="contact@agence.fr"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" id="cl-phone" placeholder="06 00 00 00 00"></div>
+        <div class="form-group"><label class="form-label">SIRET (optionnel)</label><input class="form-input" id="cl-siret" placeholder="123 456 789 00012"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Adresse</label><input class="form-input" id="cl-addr" placeholder="12 rue Exemple, 75001 Paris"></div>
+      <div style="display:flex;gap:0.75rem;margin-top:1rem;justify-content:flex-end;">
+        <button class="btn btn-ghost" onclick="closeModal('client-modal')">Annuler</button>
+        <button class="btn btn-primary" onclick="saveClient()">✅ Ajouter le client</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PWA INSTALL BANNER ── -->
+<div id="install-banner">
+  <div class="banner-icon">📱</div>
+  <div class="banner-text">
+    <strong>Installer FreelanceHQ</strong>
+    <span>Accès rapide depuis votre écran d'accueil, fonctionne hors ligne</span>
+  </div>
+  <button id="install-btn">Installer</button>
+  <button id="dismiss-btn">✕</button>
+</div>
+
+<!-- ── MODAL: DÉPENSE ── -->
+<div class="overlay" id="expense-modal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <div class="modal-title">💸 Nouvelle dépense</div>
+      <button class="modal-close" onclick="closeModal('expense-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="exp-desc" placeholder="Abonnement Adobe CC"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Montant (€)</label><input class="form-input" type="number" id="exp-amount" placeholder="54.99"></div>
+        <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="exp-date"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Catégorie</label>
+        <select class="form-select" id="exp-cat">
+          <option>Logiciels & abonnements</option>
+          <option>Matériel informatique</option>
+          <option>Formation</option>
+          <option>Transport</option>
+          <option>Téléphone & internet</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:0.75rem;margin-top:1rem;justify-content:flex-end;">
+        <button class="btn btn-ghost" onclick="closeModal('expense-modal')">Annuler</button>
+        <button class="btn btn-primary" onclick="saveExpense()">✅ Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───
+let invoices = [
+  { ref:'FAC-2025-005', client:'Agence Pixel', date:'2025-02-15', due:'2025-03-15', amount:2300, status:'pending' },
+  { ref:'FAC-2025-004', client:'Studio Nova',  date:'2025-02-01', due:'2025-03-01', amount:1550, status:'paid' },
+  { ref:'FAC-2025-003', client:'Tech Corp',    date:'2025-01-20', due:'2025-02-20', amount:4350, status:'paid' },
+  { ref:'FAC-2025-002', client:'Marie Dupont', date:'2025-01-05', due:'2025-02-05', amount: 750, status:'late' },
+  { ref:'FAC-2025-001', client:'Agence Pixel', date:'2025-01-01', due:'2025-01-31', amount:1200, status:'paid' },
+];
+
+const clientColors = ['#2563eb','#16a34a','#ea580c','#7c3aed','#0891b2'];
+let clients = [
+  { name:'Agence Pixel', email:'contact@agence-pixel.fr', phone:'01 23 45 67 89', ca:3500, invoices:2, color:'#2563eb' },
+  { name:'Studio Nova',  email:'hello@studionova.com',    phone:'06 12 34 56 78', ca:1550, invoices:1, color:'#16a34a' },
+  { name:'Tech Corp',    email:'billing@techcorp.io',     phone:'01 98 76 54 32', ca:4350, invoices:1, color:'#ea580c' },
+  { name:'Marie Dupont', email:'marie.dupont@gmail.com',  phone:'07 65 43 21 09', ca: 750, invoices:1, color:'#7c3aed' },
+];
+
+let expenses = [
+  { date:'2025-02-10', desc:'Adobe CC',          cat:'Logiciels & abonnements', amount:54.99 },
+  { date:'2025-02-01', desc:'Forfait mobile pro', cat:'Téléphone & internet',    amount:25.00 },
+  { date:'2025-01-15', desc:'Formation React',    cat:'Formation',               amount:199.00 },
+];
+
+// ─── NAVIGATION ───
+function nav(view, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  if (btn) btn.classList.add('active');
+  const titles = { dashboard:'Tableau de bord', invoices:'Factures', clients:'Clients', urssaf:'URSSAF & Cotisations', expenses:'Dépenses', settings:'Paramètres' };
+  document.getElementById('page-title').textContent = titles[view] || view;
+  if (view === 'invoices') renderInvoices();
+  if (view === 'clients')  renderClients();
+  if (view === 'expenses') renderExpenses();
+  if (view === 'dashboard') renderDashboard();
+}
+
+// ─── RENDER HELPERS ───
+function statusPill(s) {
+  const map = { paid:'status-paid', pending:'status-pending', late:'status-late', draft:'status-draft' };
+  const labels = { paid:'● Payée', pending:'○ En attente', late:'⚠ En retard', draft:'✎ Brouillon' };
+  return `<span class="status-pill ${map[s]}">${labels[s]}</span>`;
+}
+
+function fmt(n) { return n.toLocaleString('fr-FR') + ' €'; }
+
+function renderDashboard() {
+  const tbody = document.getElementById('dashboard-invoices');
+  tbody.innerHTML = invoices.slice(0,4).map(i => `
+    <tr>
+      <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;">${i.ref}</span></td>
+      <td>${i.client}</td>
+      <td>${fmtDate(i.date)}</td>
+      <td class="amount">${fmt(i.amount)}</td>
+      <td>${statusPill(i.status)}</td>
+    </tr>`).join('');
+}
+
+function renderInvoices() {
+  const tbody = document.getElementById('invoices-table');
+  document.getElementById('invoice-count').textContent = invoices.length;
+  tbody.innerHTML = invoices.map(i => `
+    <tr>
+      <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;">${i.ref}</span></td>
+      <td>${i.client}</td>
+      <td>${fmtDate(i.date)}</td>
+      <td>${fmtDate(i.due)}</td>
+      <td class="amount">${fmt(i.amount)}</td>
+      <td>${statusPill(i.status)}</td>
+      <td>
+        <div style="display:flex;gap:0.4rem;">
+          ${i.status === 'pending' || i.status === 'late' ? `<button class="btn btn-success btn-sm" onclick="markPaid('${i.ref}')">✓ Payée</button>` : ''}
+          <button class="btn btn-ghost btn-sm">📥 PDF</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function renderClients() {
+  document.getElementById('client-count').textContent = clients.length;
+  document.getElementById('clients-grid').innerHTML = clients.map(c => `
+    <div class="client-card">
+      <div class="client-avatar" style="background:${c.color}">${c.name.charAt(0)}</div>
+      <div class="client-name">${c.name}</div>
+      <div class="client-email">${c.email}</div>
+      <div class="client-stats">
+        <div><div class="client-stat-val">${fmt(c.ca)}</div><div class="client-stat-key">CA total</div></div>
+        <div><div class="client-stat-val">${c.invoices}</div><div class="client-stat-key">Factures</div></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderExpenses() {
+  const tbody = document.getElementById('expenses-table');
+  tbody.innerHTML = expenses.map(e => `
+    <tr>
+      <td>${fmtDate(e.date)}</td>
+      <td>${e.desc}</td>
+      <td><span class="kpi-badge badge-blue">${e.cat}</span></td>
+      <td class="amount">${e.amount.toFixed(2)} €</td>
+    </tr>`).join('');
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+// ─── MODALS ───
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  // Set today's date
+  const today = new Date().toISOString().split('T')[0];
+  const due = new Date(); due.setDate(due.getDate() + 30);
+  const dueStr = due.toISOString().split('T')[0];
+  if (id === 'invoice-modal') {
+    document.getElementById('inv-date').value = today;
+    document.getElementById('inv-due').value = dueStr;
+    const num = invoices.length + 1;
+    document.getElementById('inv-ref').value = `FAC-2025-00${num}`;
+    calcTotal();
+  }
+  if (id === 'expense-modal') { document.getElementById('exp-date').value = today; }
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+// ─── INVOICE LOGIC ───
+function addLine() {
+  const div = document.createElement('div');
+  div.className = 'invoice-line';
+  div.innerHTML = `
+    <input class="form-input" placeholder="Description" style="font-size:0.82rem;padding:0.4rem 0.6rem;" oninput="calcTotal()">
+    <input class="form-input" type="number" value="1" style="font-size:0.82rem;padding:0.4rem 0.6rem;" oninput="calcTotal()">
+    <input class="form-input" type="number" placeholder="0.00" style="font-size:0.82rem;padding:0.4rem 0.6rem;" oninput="calcTotal()">
+    <span style="cursor:pointer;color:var(--muted);padding-top:0.6rem;" onclick="this.parentElement.remove();calcTotal()">🗑</span>`;
+  document.getElementById('invoice-lines').appendChild(div);
+}
+
+function calcTotal() {
+  let total = 0;
+  document.querySelectorAll('#invoice-lines .invoice-line').forEach(line => {
+    const inputs = line.querySelectorAll('input');
+    const qty = parseFloat(inputs[1]?.value) || 0;
+    const price = parseFloat(inputs[2]?.value) || 0;
+    total += qty * price;
+  });
+  document.getElementById('modal-ht').textContent = total.toLocaleString('fr-FR') + ' €';
+  document.getElementById('modal-total').textContent = total.toLocaleString('fr-FR') + ' €';
+}
+
+function saveInvoice(status) {
+  const client = document.getElementById('inv-client').value;
+  const ref = document.getElementById('inv-ref').value || `FAC-2025-00${invoices.length+1}`;
+  const date = document.getElementById('inv-date').value;
+  const due = document.getElementById('inv-due').value;
+  let amount = 0;
+  document.querySelectorAll('#invoice-lines .invoice-line').forEach(line => {
+    const inputs = line.querySelectorAll('input');
+    amount += (parseFloat(inputs[1]?.value)||0) * (parseFloat(inputs[2]?.value)||0);
+  });
+  invoices.unshift({ ref, client, date, due, amount, status });
+  closeModal('invoice-modal');
+  renderDashboard();
+  renderInvoices();
+  showToast('Facture ' + (status === 'draft' ? 'sauvegardée' : 'envoyée') + ' ✓');
+}
+
+function markPaid(ref) {
+  const inv = invoices.find(i => i.ref === ref);
+  if (inv) { inv.status = 'paid'; renderInvoices(); renderDashboard(); showToast('Facture marquée comme payée ✓'); }
+}
+
+// ─── CLIENT LOGIC ───
+function saveClient() {
+  const name = document.getElementById('cl-name').value;
+  if (!name) return;
+  const color = clientColors[clients.length % clientColors.length];
+  clients.push({ name, email: document.getElementById('cl-email').value, phone: document.getElementById('cl-phone').value, ca: 0, invoices: 0, color });
+  closeModal('client-modal');
+  renderClients();
+  showToast('Client ajouté ✓');
+}
+
+// ─── EXPENSE LOGIC ───
+function saveExpense() {
+  const desc = document.getElementById('exp-desc').value;
+  const amount = parseFloat(document.getElementById('exp-amount').value);
+  const date = document.getElementById('exp-date').value;
+  const cat = document.getElementById('exp-cat').value;
+  if (!desc || !amount) return;
+  expenses.unshift({ date, desc, cat, amount });
+  closeModal('expense-modal');
+  renderExpenses();
+  showToast('Dépense enregistrée ✓');
+}
+
+// ─── URSSAF CALCULATOR ───
+function calcURSSAF() {
+  const ca = parseFloat(document.getElementById('urssaf-ca').value) || 0;
+  const rate = parseFloat(document.getElementById('urssaf-type').value);
+  const fp = parseFloat(document.getElementById('urssaf-fp').value) || 0.002;
+  const cot = ca * rate;
+  const fpAmt = ca * fp;
+  const total = cot + fpAmt;
+  document.getElementById('r-ca').textContent = ca.toLocaleString('fr-FR') + ' €';
+  document.getElementById('r-cot').textContent = Math.round(cot).toLocaleString('fr-FR') + ' €';
+  document.getElementById('r-fp').textContent = Math.round(fpAmt).toLocaleString('fr-FR') + ' €';
+  document.getElementById('r-total').textContent = Math.round(total).toLocaleString('fr-FR') + ' €';
+  document.getElementById('urssaf-bar').style.width = (rate * 100).toFixed(1) + '%';
+}
+
+function calcPlafond() {
+  const ca = parseFloat(document.getElementById('plafond-ca').value) || 0;
+  const max = parseFloat(document.getElementById('plafond-type').value);
+  const pct = Math.min((ca / max) * 100, 100);
+  const reste = Math.max(max - ca, 0);
+  document.getElementById('p-ca').textContent = ca.toLocaleString('fr-FR') + ' €';
+  document.getElementById('p-plafond').textContent = max.toLocaleString('fr-FR') + ' €';
+  document.getElementById('p-reste').textContent = reste.toLocaleString('fr-FR') + ' €';
+  document.getElementById('p-pct').textContent = pct.toFixed(1) + '%';
+  document.getElementById('p-alert-reste').textContent = reste.toLocaleString('fr-FR') + ' €';
+  document.getElementById('plafond-bar').style.width = pct + '%';
+  document.getElementById('plafond-bar').style.background = pct > 80
+    ? 'linear-gradient(90deg, #dc2626, #ea580c)'
+    : pct > 50 ? 'linear-gradient(90deg, #ea580c, #eab308)'
+    : 'linear-gradient(90deg, #16a34a, #15803d)';
+}
+
+// ─── TOAST ───
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style, {
+    position:'fixed', bottom:'1.5rem', right:'1.5rem',
+    background:'#111', color:'#fff', padding:'0.65rem 1.25rem',
+    borderRadius:'10px', fontSize:'0.85rem', fontFamily:"'Bricolage Grotesque',sans-serif",
+    zIndex:'9999', boxShadow:'0 4px 20px rgba(0,0,0,0.2)',
+    animation:'fadeIn 0.2s ease'
+  });
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ─── INIT ───
+renderDashboard();
+calcURSSAF();
+calcPlafond();
+
+// ─── SERVICE WORKER REGISTRATION ───
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('[FreelanceHQ] Service Worker enregistré ✓'))
+      .catch(err => console.warn('[FreelanceHQ] SW échec:', err));
+  });
+}
+
+// ─── PWA INSTALL BANNER ───
+let deferredPrompt = null;
+const installBanner = document.getElementById('install-banner');
+const installBtn    = document.getElementById('install-btn');
+const dismissBtn    = document.getElementById('dismiss-btn');
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (installBanner) installBanner.style.display = 'flex';
+});
+
+installBtn?.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') showToast('FreelanceHQ installé sur votre téléphone ✓');
+  deferredPrompt = null;
+  if (installBanner) installBanner.style.display = 'none';
+});
+
+dismissBtn?.addEventListener('click', () => {
+  if (installBanner) installBanner.style.display = 'none';
+});
+
+window.addEventListener('appinstalled', () => {
+  showToast('🎉 Application installée avec succès !');
+  if (installBanner) installBanner.style.display = 'none';
+});
+</script>
+</body>
+</html>
